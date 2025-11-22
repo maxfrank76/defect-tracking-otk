@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Система управления дефектами ОТК{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1C3D76;    /* CMYK 100-75-0-35 */
+            --secondary-blue: #0071AE;  /* CMYK 90-40-0-15 */
+            --light-gray: #9D9E9E;      /* CMYK 0-0-0-50 */
+            --dark-gray: #000000;       /* CMYK 0-0-0-100 */
+            --macos-background: #f5f5f7;
+            --macos-card: #ffffff;
+            --macos-border: #e0e0e0;
+            --macos-success: #30D158;
+            --macos-warning: #FF9F0A;
+            --macos-error: #FF453A;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: var(--macos-background);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--dark-gray);
+            line-height: 1.6;
+        }
+        
+        .container {
+            flex: 1 0 auto;
+            max-width: 1200px;
+        }
+        
+        /* Навбар в стиле macOS */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%) !important;
+            border: none;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+            padding: 8px 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.5px;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            padding: 6px 12px !important;
+            border-radius: 8px;
+            margin: 0 2px;
+        }
+        
+        .nav-link:hover {
+            color: rgba(255,255,255,1) !important;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* Карточки в стиле macOS */
+        .macos-card {
+            background: var(--macos-card);
+            border-radius: 12px;
+            border: 1px solid var(--macos-border);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden;
+            padding: 1rem;
+        }
+        
+        .macos-card:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+        
+        /* Кнопки в стиле macOS */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(28, 61, 118, 0.2);
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(28, 61, 118, 0.3);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            border-radius: 10px;
+            font-weight: 600;
+            background: transparent;
+            padding: 6px 18px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            transform: translateY(-1px);
+        }
+        
+        /* Формы в стиле macOS */
+        .form-control {
+            border: 2px solid var(--macos-border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: var(--macos-card);
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 113, 174, 0.15);
+            background: var(--macos-card);
+        }
+        
+        /* Алерты в стиле macOS */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            border-left: 6px solid;
+            padding: 14px 18px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 1rem;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, rgba(48, 209, 88, 0.1) 0%, rgba(48, 209, 88, 0.05) 100%);
+            border-left-color: var(--macos-success);
+            color: #1F7A36;
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(255, 69, 58, 0.1) 0%, rgba(255, 69, 58, 0.05) 100%);
+            border-left-color: var(--macos-error);
+            color: #C62B23;
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, rgba(0, 113, 174, 0.1) 0%, rgba(0, 113, 174, 0.05) 100%);
+            border-left-color: var(--secondary-blue);
+            color: var(--secondary-blue);
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(255, 159, 10, 0.1) 0%, rgba(255, 159, 10, 0.05) 100%);
+            border-left-color: var(--macos-warning);
+            color: #B35A00;
+        }
+        
+        /* Навигационные табы в стиле macOS */
+        .nav-tabs {
+            border-bottom: 2px solid var(--macos-border);
+            padding: 0 8px;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--light-gray) !important;
+            border: none;
+            border-bottom: 3px solid transparent;
+            border-radius: 10px 10px 0 0;
+            padding: 12px 24px;
+            font-weight: 600;
+            margin: 0 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-blue) !important;
+            border-bottom: 3px solid var(--primary-blue);
+            background: rgba(28, 61, 118, 0.05);
+        }
+        
+        /* Бейджи в стиле macOS */
+        .badge {
+            border-radius: 14px;
+            font-weight: 600;
+            padding: 6px 12px;
+            font-size: 0.8em;
+        }
+        
+        .badge.bg-primary {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%) !important;
+        }
+        
+        /* Футер в самом низу */
+        .footer {
+            flex-shrink: 0;
+            margin-top: auto;
+            padding: 1rem 0;
+            background: var(--macos-card);
+            border-top: 1px solid var(--macos-border);
+            color: var(--light-gray);
+        }
+        
+        /* Анимации */
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateX(-20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0); 
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        /* Кастомные стили для текста */
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Иконки */
+        .icon-large {
+            font-size: 1.3em;
+            margin-right: 6px;
+        }
+        
+        /* Утилиты */
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('dashboard.index') }}">
+                <span class="icon-large">🏭</span>
+                Система управления дефектами ОТК
+            </a>
+            
+            {% if current_user.is_authenticated %}
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3" style="color: rgba(255,255,255,0.9);">
+                    <span class="icon-large">👤</span>
+                    {{ current_user.full_name }} 
+                    <small class="d-block" style="color: rgba(255,255,255,0.7); font-size: 0.8em;">
+                        {{ user.role|replace('_', ' ')|title }}
+                    </small>
+                </span>
+                <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                    <span class="icon-large">🚪</span>
+                    Выйти
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show fade-in-up auto-dismiss" role="alert" data-dismiss-delay="4000">
+                        <strong>
+                            {% if category == 'success' %}✅
+                            {% elif category == 'danger' %}❌
+                            {% elif category == 'warning' %}⚠️
+                            {% else %}ℹ️
+                            {% endif %}
+                        </strong>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <small>
+                <strong class="text-gradient">Система управления дефектами ОТК</strong> &copy; 2025 Maksim Franchuk<br>
+                <span style="color: var(--light-gray);">Прототип приложения - Использование на свой страх и риск</span>
+            </small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Автоматическое скрытие сообщений
+        document.addEventListener('DOMContentLoaded', function() {
+            // Скрываем сообщения через 4 секунды
+            const autoDismissAlerts = document.querySelectorAll('.auto-dismiss');
+            autoDismissAlerts.forEach(alert => {
+                const delay = alert.getAttribute('data-dismiss-delay') || 4000;
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, delay);
+            });
+            
+            // Анимация при наведении на карточки
+            const cards = document.querySelectorAll('.macos-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

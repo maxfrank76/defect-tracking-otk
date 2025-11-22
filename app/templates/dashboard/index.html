@@ -1,0 +1,112 @@
+<!-- app/templates/dashboard/index.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <!-- Заголовок и бейдж -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="gradient-text mb-1">📊 Главная панель</h1>
+            <p class="text-muted mb-0">Обзор системы управления дефектами</p>
+        </div>
+        <span class="badge bg-primary">v1.0 Прототип</span>
+    </div>
+    
+    <!-- Карточки статистики -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="macos-card p-3 text-center cursor-pointer h-100">
+                <div class="fs-4">📋</div>
+                <h4 class="text-gradient mt-2 mb-1">0</h4>
+                <p class="text-muted mb-1 small fw-semibold">Открытых ведомостей</p>
+                <small class="text-success">+0%</small>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="macos-card p-3 text-center cursor-pointer h-100">
+                <div class="fs-4">🔧</div>
+                <h4 class="text-gradient mt-2 mb-1">0</h4>
+                <p class="text-muted mb-1 small fw-semibold">Дефектов в работе</p>
+                <small class="text-warning">Требуют внимания</small>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="macos-card p-3 text-center cursor-pointer h-100">
+                <div class="fs-4">✅</div>
+                <h4 class="text-gradient mt-2 mb-1">0</h4>
+                <p class="text-muted mb-1 small fw-semibold">Устранено дефектов</p>
+                <small class="text-success">Эффективность 0%</small>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="macos-card p-3 text-center cursor-pointer h-100">
+                <div class="fs-4">⏱️</div>
+                <h4 class="text-gradient mt-2 mb-1">0ч</h4>
+                <p class="text-muted mb-1 small fw-semibold">Среднее время</p>
+                <small class="text-info">На устранение</small>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Основной контент -->
+    <div class="row">
+        <div class="col-lg-8 mb-3">
+            <div class="macos-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="fs-4">👋</div>
+                    <div class="ms-3">
+                        <h4 class="text-gradient mb-0">Добро пожаловать, {{ user.full_name }}!</h4>
+                        <p class="text-muted mb-0 small">Роль: <strong class="text-primary">{{ user.role|replace('_', ' ')|title }}</strong></p>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <h5 class="mb-2">
+                        <span class="fs-5">🚀</span>
+                        Быстрые действия
+                    </h5>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-primary px-3 py-2">
+                            <span class="fs-6">📝</span>
+                            Создать ведомость
+                        </button>
+                        <button class="btn btn-outline-primary px-3 py-2">
+                            <span class="fs-6">📋</span>
+                            Список дефектов
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-3">
+            <div class="macos-card p-3 h-100">
+                <h5 class="text-gradient mb-3">
+                    <span class="fs-5">ℹ️</span>
+                    Информация о системе
+                </h5>
+                
+                <div class="mb-3">
+                    <h6 class="fw-semibold mb-2 small">✅ Реализовано:</h6>
+                    <ul class="list-unstyled text-muted small mb-3">
+                        <li class="mb-1">• Базовая аутентификация</li>
+                        <li class="mb-1">• Ролевая модель</li>
+                        <li class="mb-1">• Адаптивный интерфейс</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="fw-semibold mb-2 small">🔄 В разработке:</h6>
+                    <ul class="list-unstyled text-muted small">
+                        <li class="mb-1">• Управление дефектами</li>
+                        <li class="mb-1">• Ведомости ОТК</li>
+                        <li class="mb-1">• Статистика и отчеты</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

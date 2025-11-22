@@ -1,0 +1,62 @@
+<!-- app/templates/auth/login.html -->
+{% extends "base.html" %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-50">
+    <div class="col-md-5 col-lg-4">
+        <div class="macos-card p-4 fade-in-up">
+            <div class="text-center mb-4">
+                <div class="fs-1">🔐</div>
+                <h2 class="gradient-text mb-2">Вход в систему</h2>
+                <p class="text-muted mb-0">Система управления дефектами ОТК</p>
+            </div>
+            
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-semibold small">
+                        👤 Имя пользователя
+                    </label>
+                    <input type="text" class="form-control" id="username" name="username" 
+                           placeholder="Введите имя пользователя" required>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="password" class="form-label fw-semibold small">
+                        🔒 Пароль
+                    </label>
+                    <input type="password" class="form-control" id="password" name="password" 
+                           placeholder="Введите пароль" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 mb-3 py-2">
+                    🚀 Войти в систему
+                </button>
+                
+                <div class="text-center">
+                    <div class="macos-card p-2 bg-light">
+                        <small class="text-muted">
+                            <strong>Демо доступ:</strong><br>
+                            Логин: <strong>demo</strong> • Пароль: <strong>demo</strong>
+                        </small>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="macos-card p-3 mt-3 text-center slide-in">
+            <small class="text-muted">
+                💡 <strong>Система в стадии разработки</strong><br>
+                Прототип для тестирования функциональности
+            </small>
+        </div>
+    </div>
+</div>
+
+<style>
+.min-vh-50 {
+    min-height: 60vh;
+}
+</style>
+{% endblock %}
