@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Система ОТК</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1C3D76;
+            --secondary-blue: #0071AE;
+            --light-gray: #9D9E9E;
+            --dark-gray: #000000;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-blue);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: var(--secondary-blue);
+            color: white;
+        }
+        
+        .profile-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .role-badge {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Сайдбар -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h5>Система ОТК</h5>
+                        <small class="text-light">Управление дефектами</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('defects.defect_dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Дефекты
+                            </a>
+                        </li>
+                        {% if current_user.can_create_defects() %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('defects.create_defect_report') }}">
+                                <i class="fas fa-plus-circle me-2"></i>
+                                Создать ведомость
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Статистика
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ url_for('main.profile') }}">
+                                <i class="fas fa-user me-2"></i>
+                                Профиль
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Выход
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Основной контент -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Заголовок -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <i class="fas fa-user me-2"></i>
+                        Мой профиль
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <span class="badge bg-primary role-badge">
+                            {{ current_user.get_role_display() }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Уведомления -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Информация о пользователе -->
+                        <div class="card profile-card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-id-card me-2"></i>
+                                    Основная информация
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Имя пользователя:</strong></td>
+                                                <td>{{ current_user.username }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Email:</strong></td>
+                                                <td>{{ current_user.email }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Полное имя:</strong></td>
+                                                <td>{{ current_user.full_name }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td><strong>Роль:</strong></td>
+                                                <td>{{ current_user.get_role_display() }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Дата регистрации:</strong></td>
+                                                <td>{{ current_user.created_at.strftime('%d.%m.%Y') }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Статус:</strong></td>
+                                                <td>
+                                                    <span class="badge bg-success">Активен</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Права доступа -->
+                        <div class="card profile-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-key me-2"></i>
+                                    Права доступа
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Разрешенные действия:</h6>
+                                        <ul class="list-unstyled">
+                                            {% if current_user.can_create_defects() %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Создание ведомостей</li>
+                                            {% endif %}
+                                            {% if current_user.can_assign_work() %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Назначение исполнителей</li>
+                                            {% endif %}
+                                            {% if current_user.can_view_statistics() %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Просмотр статистики</li>
+                                            {% endif %}
+                                            <li><i class="fas fa-check text-success me-2"></i>Просмотр ведомостей</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Описание роли:</h6>
+                                        <p class="text-muted">
+                                            {% if current_user.role == 'otk_engineer' %}
+                                            Вы можете создавать ведомости дефектации, добавлять дефекты и проверять устранение.
+                                            {% elif current_user.role == 'worker' %}
+                                            Вы можете принимать ведомости в работу, отмечать начало и завершение работ.
+                                            {% elif current_user.role == 'master' %}
+                                            Вы можете назначать исполнителей, контролировать ход работ и изменять статусы.
+                                            {% elif current_user.role == 'otk_chief' %}
+                                            Вы имеете доступ к статистике работы ОТК и всем ведомостям.
+                                            {% elif current_user.role == 'production_director' %}
+                                            Вы имеете доступ к полной статистике и аналитике по производству.
+                                            {% elif current_user.role == 'admin' %}
+                                            Вы имеете полный доступ ко всем функциям системы и управлению пользователями.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Быстрые действия -->
+                        <div class="card profile-card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-bolt me-2"></i>
+                                    Быстрые действия
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('defects.defect_dashboard') }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-list me-2"></i>Все ведомости
+                                    </a>
+                                    {% if current_user.can_create_defects() %}
+                                    <a href="{{ url_for('defects.create_defect_report') }}" class="btn btn-outline-success">
+                                        <i class="fas fa-plus me-2"></i>Новая ведомость
+                                    </a>
+                                    {% endif %}
+                                    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-info">
+                                        <i class="fas fa-chart-bar me-2"></i>Статистика
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Статистика пользователя -->
+                        <div class="card profile-card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-chart-pie me-2"></i>
+                                    Моя статистика
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-line fa-2x text-muted mb-3"></i>
+                                    <p class="text-muted">Статистика в разработке</p>
+                                    <small>Скоро здесь появятся ваши персональные метрики</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

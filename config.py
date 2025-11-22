@@ -1,13 +1,14 @@
-# config.py
 import os
+from datetime import timedelta
 
 class Config:
-    SECRET_KEY = 'your-secret-key-2025-change-in-production'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///defect_tracking.db'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-2024'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///defect_tracking.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-class DevelopmentConfig(Config):
-    DEBUG = True
-
-class ProductionConfig(Config):
-    DEBUG = False
+    
+    # Настройки сессии
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)
+    
+    # Настройки загрузки файлов
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'app', 'static', 'uploads')

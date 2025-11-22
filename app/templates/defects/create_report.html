@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Система ОТК</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1C3D76;
+            --secondary-blue: #0071AE;
+            --light-gray: #9D9E9E;
+            --dark-gray: #000000;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-blue);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: var(--secondary-blue);
+            color: white;
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Сайдбар -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h5>Система ОТК</h5>
+                        <small class="text-light">Управление дефектами</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('defects.defect_dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Дашборд
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ url_for('defects.create_defect_report') }}">
+                                <i class="fas fa-plus-circle me-2"></i>
+                                Создать ведомость
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.profile') }}">
+                                <i class="fas fa-user me-2"></i>
+                                Профиль
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>
+                                Выход
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Основной контент -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Заголовок -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Создание ведомости дефектации
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <a href="{{ url_for('defects.defect_dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Назад
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Уведомления -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Форма создания ведомости -->
+                <div class="form-section">
+                    <form method="POST" action="{{ url_for('defects.create_defect_report') }}">
+                        <!-- Основная информация -->
+                        <h4 class="mb-4">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>
+                            Основная информация
+                        </h4>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="product_veksh" class="form-label">Номер ВЕКШ *</label>
+                                <input type="text" class="form-control" id="product_veksh" name="product_veksh" 
+                                       required placeholder="Введите номер изделия">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="osk_operation" class="form-label">Операция ОСК *</label>
+                                <select class="form-select" id="osk_operation" name="osk_operation" required>
+                                    <option value="">Выберите операцию...</option>
+                                    <option value="035">035 - Контроль сборки</option>
+                                    <option value="040">040 - Контроль монтажа</option>
+                                    <option value="045">045 - Контроль проводки</option>
+                                    <option value="055">055 - Финальный контроль</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Классификация дефекта -->
+                        <h4 class="mb-4 mt-5">
+                            <i class="fas fa-tags me-2 text-primary"></i>
+                            Классификация дефекта
+                        </h4>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="defect_type" class="form-label">Тип дефекта *</label>
+                                <select class="form-select" id="defect_type" name="defect_type" required>
+                                    <option value="">Выберите тип...</option>
+                                    <option value="production">Производственный</option>
+                                    <option value="constructive">Конструктивный</option>
+                                    <option value="material">По сырью/материалам</option>
+                                    <option value="equipment">По оборудованию</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="defect_source" class="form-label">Источник дефекта *</label>
+                                <select class="form-select" id="defect_source" name="defect_source" required>
+                                    <option value="">Выберите источник...</option>
+                                    <option value="raw_material">Сырье/материалы</option>
+                                    <option value="process">Техпроцесс</option>
+                                    <option value="equipment">Оборудование</option>
+                                    <option value="human">Человеческий фактор</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="priority" class="form-label">Приоритет *</label>
+                                <select class="form-select" id="priority" name="priority" required>
+                                    <option value="">Выберите приоритет...</option>
+                                    <option value="critical">Критичный</option>
+                                    <option value="high">Высокий</option>
+                                    <option value="medium">Средний</option>
+                                    <option value="low">Низкий</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ответственность -->
+                        <h4 class="mb-4 mt-5">
+                            <i class="fas fa-users me-2 text-primary"></i>
+                            Ответственность
+                        </h4>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="responsible_department" class="form-label">Ответственное подразделение *</label>
+                                <select class="form-select" id="responsible_department" name="responsible_department" required>
+                                    <option value="">Выберите подразделение...</option>
+                                    <option value="production">Производство</option>
+                                    <option value="otk">ОТК</option>
+                                    <option value="technology">Технологи</option>
+                                    <option value="supply">Снабжение</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="{{ url_for('defects.defect_dashboard') }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-times me-2"></i>Отмена
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Создать ведомость
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
