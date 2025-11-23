@@ -29,6 +29,7 @@ def defect_dashboard():
                          defects=defects, 
                          title='Дашборд дефектов')
 
+# В app/routes/defects.py исправляем функцию create_defect_report:
 @defect_routes.route('/defects/create', methods=['GET', 'POST'])
 @login_required
 def create_defect_report():
@@ -39,25 +40,30 @@ def create_defect_report():
         return redirect(url_for('defects.defect_dashboard'))
     
     if request.method == 'POST':
-        # Создаем ведомость из формы
-        report = DefectReport(
-            product_veksh=request.form.get('product_veksh'),
-            osk_operation=request.form.get('osk_operation'),
-            defect_type=request.form.get('defect_type'),
-            defect_source=request.form.get('defect_source'),
-            priority=request.form.get('priority'),
-            responsible_department=request.form.get('responsible_department'),
-            created_by_id=current_user.id
-        )
-        
-        # Генерируем номер
-        report.report_number = report.generate_report_number()
-        
-        db.session.add(report)
-        db.session.commit()
-        
-        flash(f'Ведомость {report.report_number} создана успешно!', 'success')
-        return redirect(url_for('defects.defect_detail', report_id=report.id))
+        try:
+            # Создаем ведомость из формы
+            report = DefectReport(
+                product_veksh=request.form.get('product_veksh'),
+                osk_operation=request.form.get('osk_operation'),
+                defect_type=request.form.get('defect_type'),
+                defect_source=request.form.get('defect_source'),
+                priority=request.form.get('priority'),
+                responsible_department=request.form.get('responsible_department'),
+                created_by_id=current_user.id
+            )
+            
+            # Генерируем номер
+            report.report_number = DefectReport.generate_report_number()
+            
+            db.session.add(report)
+            db.session.commit()
+            
+            flash(f'Ведомость {report.report_number} создана успешно!', 'success')
+            return redirect(url_for('defects.defect_detail', report_id=report.id))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Ошибка при создании ведомости: {str(e)}', 'error')
     
     return render_template('defects/create_report.html', title='Создание ведомости')
 
@@ -169,6 +175,8 @@ def update_report_status(report_id):
     flash(f'Статус ведомости обновлен на: {new_status}', 'success')
     return redirect(url_for('defects.defect_detail', report_id=report.id))
 
+# Добавляем новые функции статистики в app/routes/defects.py
+
 @defect_routes.route('/api/defects/stats')
 @login_required
 def defect_stats():
@@ -176,19 +184,95 @@ def defect_stats():
     if not current_user.can_view_statistics():
         return jsonify({'error': 'Нет прав доступа'}), 403
     
-    # Базовая статистика (будет расширена)
-    total_reports = DefectReport.query.count()
-    open_reports = DefectReport.query.filter_by(status='created').count()
-    assigned_reports = DefectReport.query.filter_by(status='assigned').count()
-    in_progress_reports = DefectReport.query.filter_by(status='in_progress').count()
-    resolved_reports = DefectReport.query.filter_by(status='resolved').count()
-    verified_reports = DefectReport.query.filter_by(status='verified').count()
-    
-    return jsonify({
-        'total_reports': total_reports,
-        'open_reports': open_reports,
-        'assigned_reports': assigned_reports,
-        'in_progress_reports': in_progress_reports,
-        'resolved_reports': resolved_reports,
-        'verified_reports': verified_reports
-    })
+    try:
+        # Базовая статистика
+        total_reports = DefectReport.query.count()
+        created_reports = DefectReport.query.filter_by(status='created').count()
+        assigned_reports = DefectReport.query.filter_by(status='assigned').count()
+        in_progress_reports = DefectReport.query.filter_by(status='in_progress').count()
+        resolved_reports = DefectReport.query.filter_by(status='resolved').count()
+        verified_reports = DefectReport.query.filter_by(status='verified').count()
+        
+        # Статистика по приоритетам
+        critical_reports = DefectReport.query.filter_by(priority='critical').count()
+        high_reports = DefectReport.query.filter_by(priority='high').count()
+        medium_reports = DefectReport.query.filter_by(priority='medium').count()
+        low_reports = DefectReport.query.filter_by(priority='low').count()
+        
+        # Статистика по типам дефектов
+        production_defects = DefectReport.query.filter_by(defect_type='production').count()
+        constructive_defects = DefectReport.query.filter_by(defect_type='constructive').count()
+        material_defects = DefectReport.query.filter_by(defect_type='material').count()
+        equipment_defects = DefectReport.query.filter_by(defect_type='equipment').count()
+        
+        # Статистика по операциям ОСК
+        osk_035 = DefectReport.query.filter_by(osk_operation='035').count()
+        osk_040 = DefectReport.query.filter_by(osk_operation='040').count()
+        osk_045 = DefectReport.query.filter_by(osk_operation='045').count()
+        osk_055 = DefectReport.query.filter_by(osk_operation='055').count()
+        
+        return jsonify({
+            'total_reports': total_reports,
+            'created_reports': created_reports,
+            'assigned_reports': assigned_reports,
+            'in_progress_reports': in_progress_reports,
+            'resolved_reports': resolved_reports,
+            'verified_reports': verified_reports,
+            
+            'priority_stats': {
+                'critical': critical_reports,
+                'high': high_reports,
+                'medium': medium_reports,
+                'low': low_reports
+            },
+            
+            'defect_type_stats': {
+                'production': production_defects,
+                'constructive': constructive_defects,
+                'material': material_defects,
+                'equipment': equipment_defects
+            },
+            
+            'osk_stats': {
+                '035': osk_035,
+                '040': osk_040,
+                '045': osk_045,
+                '055': osk_055
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@defect_routes.route('/api/defects/user-stats')
+@login_required
+def user_stats():
+    """API для получения персональной статистики"""
+    try:
+        if current_user.role == 'otk_engineer':
+            # Статистика для инженера ОТК
+            created_reports = DefectReport.query.filter_by(created_by_id=current_user.id).count()
+            verified_reports = DefectReport.query.filter_by(created_by_id=current_user.id, status='verified').count()
+            
+            return jsonify({
+                'created_reports': created_reports,
+                'verified_reports': verified_reports,
+                'efficiency': round((verified_reports / created_reports * 100) if created_reports > 0 else 0, 1)
+            })
+            
+        elif current_user.role == 'worker':
+            # Статистика для сборщика
+            assigned_reports = DefectReport.query.filter_by(assigned_worker_id=current_user.id).count()
+            completed_reports = DefectReport.query.filter_by(assigned_worker_id=current_user.id, status='resolved').count()
+            
+            return jsonify({
+                'assigned_reports': assigned_reports,
+                'completed_reports': completed_reports,
+                'completion_rate': round((completed_reports / assigned_reports * 100) if assigned_reports > 0 else 0, 1)
+            })
+            
+        else:
+            return jsonify({'message': 'Статистика для вашей роли в разработке'})
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

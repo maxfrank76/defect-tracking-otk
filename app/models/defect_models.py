@@ -1,4 +1,4 @@
-# 📁 app/models/defect_models.py
+# app/models/defect_models.py
 
 from datetime import datetime
 from app import db
@@ -48,15 +48,17 @@ class DefectReport(db.Model):
     defects = db.relationship('Defect', backref='report', lazy=True, cascade='all, delete-orphan')
     created_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
-    def generate_report_number(self):
-        """Генерация номера ведомости в формате XXYY-ZZZZ"""
-        year = datetime.now().strftime('%y')
-        month = datetime.now().strftime('%m')
+    @classmethod
+    def generate_report_number(cls):
+        """Генерация номера ведомости в формате MMYY-XXXX"""
+        now = datetime.now()
+        month = now.strftime('%m')
+        year = now.strftime('%y')
         
         # Получаем количество ведомостей за этот месяц
-        month_start = datetime(datetime.now().year, datetime.now().month, 1)
-        count = DefectReport.query.filter(
-            DefectReport.created_date >= month_start
+        month_start = datetime(now.year, now.month, 1)
+        count = cls.query.filter(
+            cls.created_date >= month_start
         ).count() + 1
         
         return f"{month}{year}-{count:04d}"

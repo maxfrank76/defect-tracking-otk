@@ -125,80 +125,118 @@
                     {% endif %}
                 {% endwith %}
 
-                <!-- Статистика -->
-                <div class="row mb-4">
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Всего ведомостей
-                                        </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-reports">0</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+               <!-- В templates/dashboard.html заменяем блок статистики на этот: -->
 
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            В работе
-                                        </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="in-progress-reports">0</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-tools fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+<!-- Статистика -->
+<div class="row mb-4">
+    <div class="col-xl-2 col-md-4 col-6 mb-4">
+        <div class="card stat-card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Всего
                         </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-reports">0</div>
                     </div>
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Проверено
-                                        </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="verified-reports">0</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card stat-card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                            Ожидают проверки
-                                        </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="resolved-reports">0</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-4">
+        <div class="card stat-card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            В работе
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="in-progress-reports">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-tools fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-4">
+        <div class="card stat-card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Проверено
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="verified-reports">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-4">
+        <div class="card stat-card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Назначено
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="assigned-reports">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-4">
+        <div class="card stat-card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Критичные
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="critical-reports">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 col-6 mb-4">
+        <div class="card stat-card border-left-secondary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                            ОСК 035
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="osk-035">0</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-cogs fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                 <!-- Быстрые действия -->
                 <div class="row">
@@ -260,25 +298,41 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Загрузка статистики
-        async function loadStats() {
-            try {
-                const response = await fetch('/api/defects/stats');
-                const data = await response.json();
+    <!-- В templates/dashboard.html заменяем script на этот: -->
+
+<script>
+    // Загрузка статистики
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/defects/stats');
+            const data = await response.json();
+            
+            if (!data.error) {
+                // Основная статистика
+                document.getElementById('total-reports').textContent = data.total_reports;
+                document.getElementById('in-progress-reports').textContent = data.in_progress_reports;
+                document.getElementById('verified-reports').textContent = data.verified_reports;
+                document.getElementById('assigned-reports').textContent = data.assigned_reports;
                 
-                if (!data.error) {
-                    document.getElementById('total-reports').textContent = data.total_reports;
-                    document.getElementById('in-progress-reports').textContent = data.in_progress_reports;
-                    document.getElementById('verified-reports').textContent = data.verified_reports;
-                    document.getElementById('resolved-reports').textContent = data.resolved_reports;
-                }
-            } catch (error) {
-                console.error('Ошибка загрузки статистики:', error);
+                // Расширенная статистика
+                document.getElementById('critical-reports').textContent = data.priority_stats.critical;
+                document.getElementById('osk-035').textContent = data.osk_stats['035'];
+            } else {
+                console.error('Ошибка API:', data.error);
             }
+        } catch (error) {
+            console.error('Ошибка загрузки статистики:', error);
+            // Показываем заглушки при ошибке
+            document.getElementById('total-reports').textContent = '0';
+            document.getElementById('in-progress-reports').textContent = '0';
+            document.getElementById('verified-reports').textContent = '0';
+            document.getElementById('assigned-reports').textContent = '0';
+            document.getElementById('critical-reports').textContent = '0';
+            document.getElementById('osk-035').textContent = '0';
         }
-        
-        document.addEventListener('DOMContentLoaded', loadStats);
-    </script>
+    }
+    
+    document.addEventListener('DOMContentLoaded', loadStats);
+</script>
 </body>
 </html>
