@@ -193,24 +193,14 @@
                                             <li><i class="fas fa-check text-success me-2"></i>Просмотр ведомостей</li>
                                         </ul>
                                     </div>
-                                    <div class="col-md-6">
-                                        <h6>Описание роли:</h6>
-                                        <p class="text-muted">
-                                            {% if current_user.role == 'otk_engineer' %}
-                                            Вы можете создавать ведомости дефектации, добавлять дефекты и проверять устранение.
-                                            {% elif current_user.role == 'worker' %}
-                                            Вы можете принимать ведомости в работу, отмечать начало и завершение работ.
-                                            {% elif current_user.role == 'master' %}
-                                            Вы можете назначать исполнителей, контролировать ход работ и изменять статусы.
-                                            {% elif current_user.role == 'otk_chief' %}
-                                            Вы имеете доступ к статистике работы ОТК и всем ведомостям.
-                                            {% elif current_user.role == 'production_director' %}
-                                            Вы имеете доступ к полной статистике и аналитике по производству.
-                                            {% elif current_user.role == 'admin' %}
-                                            Вы имеете полный доступ ко всем функциям системы и управлению пользователями.
-                                            {% endif %}
-                                        </p>
-                                    </div>
+                                    <!-- В templates/profile.html обновляем блок с описанием роли -->
+
+<div class="col-md-6">
+    <h6>Описание роли:</h6>
+    <p class="text-muted">
+        {{ current_user.get_role_description() }}
+    </p>
+</div>
                                 </div>
                             </div>
                         </div>

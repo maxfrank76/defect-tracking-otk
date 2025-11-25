@@ -1,5 +1,3 @@
-# app/routes/defects.py
-
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
 from app import db
@@ -27,9 +25,8 @@ def defect_dashboard():
     
     return render_template('defects/dashboard.html', 
                          defects=defects, 
-                         title='Дашборд дефектов')
+                         title='Ведомости дефектации')
 
-# В app/routes/defects.py исправляем функцию create_defect_report:
 @defect_routes.route('/defects/create', methods=['GET', 'POST'])
 @login_required
 def create_defect_report():
@@ -44,6 +41,7 @@ def create_defect_report():
             # Создаем ведомость из формы
             report = DefectReport(
                 product_veksh=request.form.get('product_veksh'),
+                factory_number=request.form.get('factory_number', '').strip(),  # Может быть пустым
                 osk_operation=request.form.get('osk_operation'),
                 defect_type=request.form.get('defect_type'),
                 defect_source=request.form.get('defect_source'),
@@ -175,7 +173,24 @@ def update_report_status(report_id):
     flash(f'Статус ведомости обновлен на: {new_status}', 'success')
     return redirect(url_for('defects.defect_detail', report_id=report.id))
 
-# Добавляем новые функции статистики в app/routes/defects.py
+@defect_routes.route('/defects/<int:report_id>/update-factory-number', methods=['POST'])
+@login_required
+def update_factory_number(report_id):
+    """Обновление заводского номера"""
+    report = DefectReport.query.get_or_404(report_id)
+    
+    # Проверка прав - могут редактировать создатель, ОТК или администраторы
+    if (report.created_by_id != current_user.id and 
+        current_user.role not in ['otk_engineer', 'otk_chief', 'admin']):
+        flash('У вас нет прав для редактирования этой ведомости', 'error')
+        return redirect(url_for('defects.defect_detail', report_id=report.id))
+    
+    factory_number = request.form.get('factory_number', '').strip()
+    report.factory_number = factory_number if factory_number else None
+    
+    db.session.commit()
+    flash('Заводской номер обновлен', 'success')
+    return redirect(url_for('defects.defect_detail', report_id=report.id))
 
 @defect_routes.route('/api/defects/stats')
 @login_required
@@ -244,6 +259,31 @@ def defect_stats():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@defect_routes.route('/api/defects/basic-stats')
+@login_required
+def basic_defect_stats():
+    """API для получения базовой статистики (доступно всем авторизованным)"""
+    try:
+        # Базовая статистика доступная всем
+        total_reports = DefectReport.query.count()
+        created_reports = DefectReport.query.filter_by(status='created').count()
+        assigned_reports = DefectReport.query.filter_by(status='assigned').count()
+        in_progress_reports = DefectReport.query.filter_by(status='in_progress').count()
+        resolved_reports = DefectReport.query.filter_by(status='resolved').count()
+        verified_reports = DefectReport.query.filter_by(status='verified').count()
+        
+        return jsonify({
+            'total_reports': total_reports,
+            'created_reports': created_reports,
+            'assigned_reports': assigned_reports,
+            'in_progress_reports': in_progress_reports,
+            'resolved_reports': resolved_reports,
+            'verified_reports': verified_reports
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @defect_routes.route('/api/defects/user-stats')
 @login_required
 def user_stats():
@@ -276,3 +316,16 @@ def user_stats():
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@defect_routes.route('/api/debug/user-info')
+@login_required
+def debug_user_info():
+    """Отладочная информация о пользователе"""
+    return jsonify({
+        'username': current_user.username,
+        'role': current_user.role,
+        'role_display': current_user.get_role_display(),
+        'can_view_statistics': current_user.can_view_statistics(),
+        'can_create_defects': current_user.can_create_defects(),
+        'can_assign_work': current_user.can_assign_work()
+    })

@@ -55,14 +55,20 @@
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('defects.defect_dashboard') }}">
-                                <i class="fas fa-tachometer-alt me-2"></i>
-                                Дашборд
+                                <i class="fas fa-list me-2"></i>
+                                Все ведомости
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" href="{{ url_for('defects.create_defect_report') }}">
                                 <i class="fas fa-plus-circle me-2"></i>
                                 Создать ведомость
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Общая статистика
                             </a>
                         </li>
                         <li class="nav-item">
@@ -91,7 +97,7 @@
                     </h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <a href="{{ url_for('defects.defect_dashboard') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Назад
+                            <i class="fas fa-arrow-left me-2"></i>Назад к ведомостям
                         </a>
                     </div>
                 </div>
@@ -122,7 +128,17 @@
                                 <label for="product_veksh" class="form-label">Номер ВЕКШ *</label>
                                 <input type="text" class="form-control" id="product_veksh" name="product_veksh" 
                                        required placeholder="Введите номер изделия">
+                                <div class="form-text">Обязательное поле</div>
                             </div>
+                            <div class="col-md-6">
+                                <label for="factory_number" class="form-label">Заводской номер</label>
+                                <input type="text" class="form-control" id="factory_number" name="factory_number" 
+                                       placeholder="Можно добавить позже">
+                                <div class="form-text">Необязательное поле - можно добавить позже</div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="osk_operation" class="form-label">Операция ОСК *</label>
                                 <select class="form-select" id="osk_operation" name="osk_operation" required>

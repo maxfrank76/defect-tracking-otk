@@ -13,6 +13,7 @@ class DefectReport(db.Model):
     
     # 🏷️ Основные данные
     product_veksh = db.Column(db.String(50), nullable=False)  # Номер ВЕКШ
+    factory_number = db.Column(db.String(50))  # Заводской номер (может быть добавлен позже)
     osk_operation = db.Column(db.String(10), nullable=False)  # 035/040/045/055
     
     # 🏷️ Классификация (из файла ОТК)

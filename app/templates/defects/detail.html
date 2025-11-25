@@ -171,15 +171,51 @@
                                         <h5 class="card-title">Основная информация</h5>
                                         <table class="table table-sm">
                                             <tr>
-                                                <td><strong>Номер ВЕКШ:</strong></td>
-                                                <td>{{ report.product_veksh }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><strong>Операция ОСК:</strong></td>
-                                                <td>
-                                                    <span class="badge bg-dark">{{ report.osk_operation }}</span>
-                                                </td>
-                                            </tr>
+        <td><strong>Номер ВЕКШ:</strong></td>
+        <td>{{ report.product_veksh }}</td>
+    </tr>
+    <!-- В templates/defects/detail.html заменяем блок с заводским номером на этот: -->
+
+<tr>
+    <td><strong>Заводской номер:</strong></td>
+    <td>
+        {% if report.factory_number %}
+            {{ report.factory_number }}
+        {% else %}
+            <span class="text-muted">Не указан</span>
+        {% endif %}
+        
+        {% if report.created_by_id == current_user.id or current_user.role in ['otk_engineer', 'otk_chief', 'admin'] %}
+        <button class="btn btn-sm btn-outline-secondary ms-2" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#factoryNumberForm">
+            <i class="fas fa-edit"></i>
+        </button>
+        
+        <div class="collapse mt-2" id="factoryNumberForm">
+            <form method="POST" action="{{ url_for('defects.update_factory_number', report_id=report.id) }}" class="row g-2">
+                <div class="col-auto">
+                    <input type="text" class="form-control form-control-sm" 
+                           name="factory_number" 
+                           value="{{ report.factory_number or '' }}"
+                           placeholder="Введите заводской номер">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#factoryNumberForm">Отмена</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </td>
+</tr>
+        <td><strong>Операция ОСК:</strong></td>
+        <td>
+            <span class="badge bg-dark">{{ report.osk_operation }}</span>
+        </td>
+    </tr>
                                             <tr>
                                                 <td><strong>Тип дефекта:</strong></td>
                                                 <td>

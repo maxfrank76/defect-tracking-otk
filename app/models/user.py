@@ -1,4 +1,4 @@
-# 📁 app/models/user.py
+# app/models/user.py
 
 from app import db, login_manager
 from flask_login import UserMixin
@@ -37,13 +37,34 @@ class User(db.Model, UserMixin):
         return self.ROLE_CHOICES.get(self.role, self.role)
     
     def can_create_defects(self):
-        return self.role in ['otk_engineer', 'worker', 'master']
+        # Только ОТК и администраторы могут создавать ведомости
+        return self.role in ['otk_engineer', 'otk_chief', 'admin']
     
     def can_assign_work(self):
-        return self.role in ['master', 'production_chief']
+        return self.role in ['master', 'production_chief', 'admin']
     
     def can_view_statistics(self):
-        return self.role in ['otk_chief', 'production_director', 'general_director', 'admin']
+        return self.role in ['otk_engineer', 'otk_chief', 'production_director', 'general_director', 'admin', 'master', 'production_chief']
+    
+    def can_view_all_defects(self):
+        # Кто может видеть все ведомости
+        return self.role in ['otk_engineer', 'otk_chief', 'master', 'production_chief', 'production_director', 'admin']
+    
+    def get_role_description(self):
+        """Описание роли для отображения в интерфейсе"""
+        descriptions = {
+            'otk_engineer': 'Создание ведомостей дефектации, проверка устранения дефектов',
+            'otk_chief': 'Контроль работы ОТК, просмотр статистики, управление подчиненными',
+            'worker': 'Устранение дефектов, работа с назначенными ведомостями',
+            'master': 'Назначение исполнителей, контроль выполнения работ',
+            'production_chief': 'Управление производственным участком, назначение работ',
+            'technologist': 'Консультации по технологическим вопросам, анализ причин дефектов',
+            'chief_engineer': 'Принятие технических решений, эскалация сложных случаев',
+            'production_director': 'Мониторинг эффективности производства, аналитика',
+            'general_director': 'Принятие окончательных решений по продукции',
+            'admin': 'Полный доступ к системе, управление пользователями'
+        }
+        return descriptions.get(self.role, 'Базовые права доступа')
     
     def __repr__(self):
         return f'<User {self.username} ({self.role})>'
